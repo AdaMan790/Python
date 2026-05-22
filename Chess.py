@@ -1,5 +1,6 @@
 class Move:
     def __init__(self,board, startRow, startCol, endRow, endCol):
+        self.board = board
         self.startRow = startRow
         self.startCol = startCol
         self.endRow = endRow
@@ -7,8 +8,8 @@ class Move:
         self.pieceCaptured = board[endRow][endCol]
         self.pieceMoved = board[startRow][startCol]
     def makeMove(self):
-        board[self.endRow][self.endCol] = self.pieceMoved
-        board[self.startRow][self.startCol] = "[]"
+        self.board[self.endRow][self.endCol] = self.pieceMoved
+        self.board[self.startRow][self.startCol] = "[]"
 
 board = [
     ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
@@ -43,35 +44,66 @@ def chessNotationToMove(board, chessNotation):
 
 #Gets valid moves considering checks
 def getValidMoves():
-    pass
+    moves = getAllMoves()
+
+    
 #Gets moves regardless of checks
 def getAllMoves():
     moves = []
-    moves.append(getPawnMoves(board)))
-    moves.append(getKnightMoves(board))
-    moves.append(getBishopMoves(board))
-    moves.append(getRookMoves(board))
-    moves.append(getQueenMoves(board))
-    moves.append(getKingMoves(board))
+    getPawnMoves(moves)
+    getKnightMoves(moves)
+    getBishopMoves(moves)
+    getRookMoves(moves)
+    getQueenMoves(moves)
+    getKingMoves(moves)
     return moves
 
 #Gets other moves
-def getPawnMoves():
-    pass
+def getPawnMoves(moves):
+    
+    for row in range(len(board)):
+        for col in range(len(board[row])):
+            if board[row][col] == "wP":
+                if row > 0:
+                    if board[row] == 7:
+                        moves.append(Move(board, row, col, row - 2, col))
+                    
+                    if board[row - 1][col] == "[]":     
+                        moves.append(Move(board, row, col, row - 1, col))
+                        
+                    if 0 < col < 8:
+                        if board[row - 1][col - 1] != "[]":
+                            moves.append(Move(board, row, col, row - 1, col - 1))   
+                        if board[row - 1][col + 1] != "[]":
+                            moves.append(Move(board, row, col, row - 1, col + 1))
+            
+            elif board[row][col] == "bP":
+                if row < 8:
+                    if board[row] == 1:
+                        moves.append(Move(board, row, col, row + 2, col))
+                        
+                    if board[row + 1][col] == "[]":     
+                        moves.append(Move(board, row, col, row + 1, col))
+                        
+                    if 0 < col < 8:
+                        if board[row + 1][col + 1] != "[]":
+                            moves.append(Move(board, row, col, row + 1, col + 1))   
+                        if board[row + 1][col - 1] != "[]":
+                            moves.append(Move(board, row, col, row + 1, col - 1))
 
-def getKnightMoves():
+def getKnightMoves(moves):
     pass   
 
-def getBishopMoves():
+def getBishopMoves(moves):
     pass
 
-def getRookMoves():
+def getRookMoves(moves):
     pass
 
-def getQueenMoves():
+def getQueenMoves(moves):
     pass
 
-def getKingMoves():
+def getKingMoves(moves):
     pass
 
 drawBoard(board)
