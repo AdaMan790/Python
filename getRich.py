@@ -5,6 +5,9 @@ money = 100
 debt = 0
 reputation = 50
 occupation = None
+investing = 0
+originalInvestment = 1
+
 jobs = {
     "Paperboy": 12,
     "Fast Food Worker": 18,
@@ -42,15 +45,132 @@ lastWagesRefresh = 0
 lastReputationRefresh = True
 lastDebtRefresh = 0
 lastRandomEventRefresh = 0
+lastInvestmentRefresh = 0
+lastTaxRefresh = 0
 
 def randomEvent():
+    
+    randomEvents = [
+    {
+        "name": "Found Money",
+        "description": "You found cash blowing down the street.",
+        "money": 50
+    },
+
+    {
+        "name": "Crypto Crash",
+        "description": "Your meme coin portfolio exploded... in the bad way.",
+        "money": -200
+    },
+    
+    {
+        "name": "Bank Error",
+        "description": "The bank accidentally deposited money into your account.",
+        "money": 500
+    },
+
+    {
+        "name": "Tax Audit",
+        "description": "The government audited your finances.",
+        "money": -350,
+        "reputation": -10
+    },
+
+    {
+        "name": "Celebrity Tweet",
+        "description": "A celebrity randomly promoted your online business.",
+        "money": 2000,
+        "reputation": 15
+    },
+
+    {
+        "name": "Coffee Disaster",
+        "description": "You spilled coffee on your work computer.",
+        "money": -150,
+        "reputation": -5
+    },
+
+    {
+        "name": "Fake Guru Course",
+        "description": "You bought a 'Get Rich Quick' course from a guy in a Lamborghini.",
+        "money": -800
+    },
+
+    {
+        "name": "Dog Walking Empire",
+        "description": "Your dog-walking side hustle suddenly went viral.",
+        "money": 1200,
+        "reputation": 10
+    },
+
+    {
+        "name": "Casino Security",
+        "description": "Casino security accused you of cheating and banned you.",
+        "reputation": -20
+    },
+
+    {
+        "name": "Mysterious Briefcase",
+        "description": "You found a suspicious briefcase full of money.",
+        "money": 2500,
+        "reputation": -15
+    },
+
+    {
+        "name": "Office Microwave Explosion",
+        "description": "Your leftover fish curry exploded in the office microwave.",
+        "reputation": -25
+    },
+
+    {
+        "name": "Time Traveler Tip",
+        "description": "A time traveler gave you stock advice that somehow worked.",
+        "money": 7500
+    },
+
+    {
+        "name": "Viral Meme",
+        "description": "You accidentally became famous from a terrible meme.",
+        "money": 900,
+        "reputation": 30
+    },
+
+    {
+        "name": "Identity Theft",
+        "description": "A scammer stole your identity and maxed your cards.",
+        "money": -4000,
+        "debt": 2500
+    },
+
+    {
+        "name": "Dumpster Treasure",
+        "description": "You found a rare collectible in a dumpster.",
+        "money": 1800
+    }
+]
+    
     global lastRandomEventRefresh, money, reputation, occupation
-    if time.time() - lastRandomEventRefresh == 60:
+    if time.time() - lastRandomEventRefresh >= 30:
         lastRandomEventRefresh = time.time()
-        if random.random() > 0.95:
-            choice = random.randint(1,5)
-            if choice == 1:
-                pass
+        if random.random() < 0.1:
+            event = random.choice(randomEvents)
+            print(f"\n|| EVENT: {event["name"]} ||\n")
+            print(event["description"])
+            
+            print("\nEffects:")
+            
+            if "money" in event:
+                print(f"Money: {event["money"]}")
+                money += event["money"]
+                
+            if "reputation" in event:
+                print(f"Reputation: {event["reputation"]}")
+                reputation += event["reputation"]
+
+            if "debt" in event:
+                print(f"Debt: {event["debt"]}")
+                debt += event["debt"]
+            print()
                 
 
 def randomiseJobs():
@@ -92,10 +212,25 @@ def checkReputationRefresh():
             
 def checkDebtRefresh():
     global debt, lastDebtRefresh
-    debt += int(((time.time() - lastDebtRefresh)/100) * debt)
+    debt += int(((time.time() - lastDebtRefresh)/300) * debt)
     lastDebtRefresh = time.time()
     if debt > 100000:
         print("\nYOU WERE ARRESTED FOR TO MUCH DEBT!\n")
+        
+def checkInvestmentRefresh():
+    global investing, lastInvestmentRefresh
+    multiplier = random.choice([1, -1])
+    investing += int((((time.time() - lastInvestmentRefresh)/100) * investing) * multiplier)
+    lastInvestmentRefresh = time.time()
+    
+def checkTaxesRefresh():
+    global money, lastTaxRefresh
+    if time.time() - lastTaxRefresh >= 30:
+        lastTaxRefresh = time.time()
+        tax = int(money * 0.05)
+        print(f"\nYou were taxed {tax}!\n")
+        money -= tax
+
 
 def tick():
     checkJobRefresh()
@@ -103,6 +238,8 @@ def tick():
     checkReputationRefresh()
     checkDebtRefresh()
     randomEvent()
+    checkInvestmentRefresh()
+    checkTaxesRefresh()
 
 def main():
     
@@ -110,6 +247,8 @@ def main():
     global reputation  
     global money
     global debt
+    global investing
+    global originalInvestment
     
     while True:
         tick()
@@ -119,13 +258,13 @@ def main():
         elif playerInput == "status":
             print("Here is your status:")
             print()
-            print(f"Current money: {money} \nCurrent debt: {debt} \nReputation: {reputation} \nOccupation: {occupation} \n")
+            print(f"Current money: {money} \nCurrent debt: {debt} \nReputation: {reputation} \nOccupation: {occupation} \nInvesting: {investing}")
         elif playerInput == "actions":
             while True:
                 tick()
                 playerInput = input("Main Menu > Actions | Type ? for help. ").lower()
                 if playerInput == "?":
-                    print("You can use the following commands: \nBack \nJobs \nGambling \nLoan \nInvest \nDonate \nVolunteer \nCrime \n")
+                    print("You can use the following commands: \nBack \nJobs \nGamble \nLoan \nInvest \nDonate \nVolunteer \nCrime \n")
                 elif playerInput == "back":
                     break
                 elif playerInput == "jobs":
@@ -220,8 +359,50 @@ def main():
                         else:
                             print("Invalid command")
                             
+                elif playerInput == "invest":
+                    print(f"You have originally invested {originalInvestment - 1}, it is now {investing/originalInvestment * 100}% of the original amount. Currently you have {investing} waiting.")
+                    
+                    while True:
+                        tick()
+                        playerInput = input("Main Menu > Actions > Invest | Type ? for help. ").lower()
+                        if playerInput == "?":
+                            print("You can use the following commands: \nBack \nHome \nInvest \nRetrieve\n")
+                        elif playerInput == "back":
+                            break
+                        elif playerInput == "home":
+                            main()
+                        elif playerInput == "invest":
+                            playerInput = int(input(f"How much would you like to add to your current investment of {investing}? You have {money} "))
+                            if playerInput > money:
+                                print("You do not have enough money!")
+                            else:
+                                originalInvestment = playerInput + originalInvestment
+                                investing += playerInput
+                                money -= playerInput
+                                print(f"You have invested {playerInput}. ")
+                        elif playerInput == "retrieve":
+                            playerInput = int(input(f"How much would you like to retrieve? (max: {investing}) "))
+                            if playerInput > investing:
+                                print("You do not have that much money in investment!")
+                            else:
+                                originalInvestment -= playerInput
+                                investing -= playerInput
+                                money += playerInput
+                                print(f"You have retrieved {playerInput}. ")
+                        else:
+                            print("Invalid command")
                             
-                            
+                elif playerInput == "gamble":
+                    while True:
+                        tick()
+                        playerInput = input("Main Menu > Actions > Gamble | Type ? for help. ").lower()
+                        if playerInput == "?":
+                            print("You can use the following commands: \nBack \nHome \nPoker \nLottery\nBlackJack\n")
+                        elif playerInput == "back":
+                            break
+                        elif playerInput == "home":
+                            main()
+                
                 else:
                     print("Invalid command")
         else:
