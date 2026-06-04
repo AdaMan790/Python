@@ -61,7 +61,28 @@ jobs = {
     "Company Director": {"wage": 500, "stress": 90, "rarity": 8, "skill": 95},
 
     "Chief Technology Officer": {"wage": 700, "stress": 85, "rarity": 9, "skill": 98},
-    "Chief Executive Officer": {"wage": 1000, "stress": 95, "rarity": 10, "skill": 100}
+    "Chief Executive Officer": {"wage": 1000, "stress": 95, "rarity": 10, "skill": 100},
+    
+    "Barista": {"wage": 16, "stress": 20, "rarity": 1, "skill": 5},
+    "Sales Assistant": {"wage": 21, "stress": 30, "rarity": 1, "skill": 10},
+    "Lifeguard": {"wage": 28, "stress": 35, "rarity": 2, "skill": 15},
+    "Personal Trainer": {"wage": 36, "stress": 30, "rarity": 2, "skill": 25},
+    "Journalist": {"wage": 44, "stress": 50, "rarity": 2, "skill": 30},
+    "Paramedic": {"wage": 58, "stress": 85, "rarity": 3, "skill": 45},
+    "Architect": {"wage": 72, "stress": 45, "rarity": 4, "skill": 50},
+    "Marketing Manager": {"wage": 88, "stress": 55, "rarity": 4, "skill": 60},
+    "UX Designer": {"wage": 92, "stress": 40, "rarity": 4, "skill": 60},
+    "Cloud Engineer": {"wage": 115, "stress": 55, "rarity": 5, "skill": 75},
+    "Pharmacist": {"wage": 125, "stress": 60, "rarity": 5, "skill": 80},
+    "Veterinarian": {"wage": 135, "stress": 75, "rarity": 6, "skill": 80},
+    "University Professor": {"wage": 145, "stress": 50, "rarity": 6, "skill": 85},
+    "AI Engineer": {"wage": 170, "stress": 65, "rarity": 6, "skill": 85},
+    "Real Estate Developer": {"wage": 190, "stress": 80, "rarity": 7, "skill": 90},
+    "Startup Founder": {"wage": 240, "stress": 100, "rarity": 7, "skill": 90},
+    "Neurosurgeon": {"wage": 350, "stress": 100, "rarity": 8, "skill": 98},
+    "Private Equity Partner": {"wage": 450, "stress": 95, "rarity": 8, "skill": 98},
+    "Billionaire Investor": {"wage": 800, "stress": 70, "rarity": 9, "skill": 100},
+    "Tech Mogul": {"wage": 1500, "stress": 90, "rarity": 10, "skill": 100}
 }
 
 availableJobs = {}
@@ -177,7 +198,29 @@ def randomEvent():
         "name": "Dumpster Treasure",
         "description": "You found a rare collectible in a dumpster.",
         "money": 1800
-    }
+    },
+
+    {
+        "name": "Freak Accident",
+        "description": "You were hit in the head by a brick while walking under a skyscraper. Luckily, you were able to sue the company as you have lost your memory.",
+        "money": 1000,
+        "skill": -50,
+    },
+    
+    {
+        "name": "Robux Scam",
+        "description": "You clicked on a sketchy website that was selling 'free' robux.",
+        "money": -500,
+        "reputation": -15
+    },
+    
+    {
+        "name": "Bad Drawing",
+        "description": "Jacob drew a mean drawing of you.",
+        "stress": 10,
+        "reputation": -10
+     }
+
 ]
     
     global lastRandomEventRefresh, money, reputation, occupation, debt, totalStress, skill
@@ -288,7 +331,7 @@ def checkTaxesRefresh():
         
 def checkStressIncrease():
     global totalStress, stress, lastStressRefresh, occupation
-    totalStress += int(((time.time() - lastStressRefresh)/300) * stress)
+    totalStress += int(((time.time() - lastStressRefresh)/200) * stress)
     lastStressRefresh = time.time()
     if totalStress > 150:
         jobToLeave = None
@@ -383,6 +426,7 @@ def main():
                                         occupation.append((playerInput, jobData["wage"], jobData["stress"]))
                                         stress += jobData["stress"]
                                         print("You got the job!")
+                                        del availableJobs[playerInput]
                                     else:
                                         print("You were turned down.")
                                         del availableJobs[playerInput]
@@ -393,6 +437,7 @@ def main():
                             stress = 0
                             totalStress = 0
                             occupation.clear()
+                            reputation -= 10
                             
                         elif playerInput == "promote":
                             reputation = max(0, reputation - 15)
@@ -522,12 +567,17 @@ def main():
                             print(f"You gained {playerInput // 3} skill!")
                         elif playerInput == "private":
                             spend = int(input("How much do you want to spend on your education?"))
-                            playerInput = int(input("How long do you want to learn for? "))
-                            for second in range(playerInput):
-                                time.sleep(1)
-                                print(f"{playerInput - second - 1} seconds left!")
-                            skill = min(100, skill + playerInput // 3 * ((spend // 100) + 1))
-                            print(f"You gained {playerInput // 3 * ((spend // 100) + 1)} skill!")
+                            if spend > money:
+                                print("Not enough money!")
+                            else:
+                                playerInput = int(input("How long do you want to learn for? "))
+                                for second in range(playerInput):
+                                    time.sleep(1)
+                                    print(f"{playerInput - second - 1} seconds left!")
+                                skill = min(100, skill + playerInput // 3 * ((spend // 100) + 1))
+                                print(f"You gained {playerInput // 3 * ((spend // 100) + 1)} skill!")
+                        else:
+                            print("Invalid command")
                             
                 else:
                     print("Invalid command")
