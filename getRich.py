@@ -219,6 +219,18 @@ def randomEvent():
         "description": "Jacob drew a mean drawing of you.",
         "stress": 10,
         "reputation": -10
+     },
+    {
+        "name": "Flynn Encounter",
+        "description": "Flynn lets out a hogs bellow which makes you jump.",
+        "stress": 15,
+        "reputation": -15
+     },
+    {
+        "name": "Pebble the Finch",
+        "description": "Pebble the Finch steals your wallet.",
+        "stress": 5,
+        "money": -50
      }
 
 ]
@@ -355,6 +367,21 @@ def tick():
     checkInvestmentRefresh()
     checkTaxesRefresh()
     checkStressIncrease()
+    
+def poker(money):
+    cards = []
+    numbers = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
+    types = ["Diamonds", "Spades", "Hearts", "Clubs"]
+    for number in numbers:
+        for type in types:
+            cards.append(f"{number} of {type}")
+            
+    yourDeck = []
+    
+    for i in range(2):
+        card = random.choice(cards)
+        yourDeck.append(card)
+        cards.remove(card)
 
 def main():
     
@@ -542,12 +569,19 @@ def main():
                         tick()
                         playerInput = input("Main Menu > Actions > Gamble | Type ? for help. ").lower()
                         if playerInput == "?":
-                            print("You can use the following commands: \nBack \nHome \nPoker \nLottery \nBlackJack\n")
+                            print("You can use the following commands: \nBack \nHome \nPoker \nSlotMachine \nBlackJack\n")
                         elif playerInput == "back":
                             break
                         elif playerInput == "home":
                             main()
-                
+                        elif playerInput == "slotmachine":
+                            pass
+                            
+                        elif playerInput == "poker":
+                            poker()
+                        else:
+                            print("Invalid command")      
+                                      
                 elif playerInput == "learn":
                     while True:
                         tick()
